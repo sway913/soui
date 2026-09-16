@@ -14,6 +14,13 @@ file(GLOB_RECURSE CURRENT_HEADERS  *.h *.hpp)
 file(GLOB_RECURSE CURRENT_SRCS *.cxx)
 file(GLOB_RECURSE CURRENT_RC *.rc *.rc2)
 
+# The cross-platform build includes ScintillaWin, which calls HanjaDic even on
+# non-Windows hosts. Its COM interface has no RTTI definition there, so UBSan's
+# vptr instrumentation creates an unresolved typeinfo reference at link time.
+if(NOT CMAKE_SYSTEM_NAME MATCHES Windows AND CMAKE_CXX_COMPILER_ID MATCHES Clang)
+   set_source_files_properties(win32/HanjaDic.cxx PROPERTIES COMPILE_OPTIONS "-fno-sanitize=vptr")
+endif()
+
 source_group("Header Files" FILES ${CURRENT_HEADERS})
 source_group("Source Files" FILES ${CURRENT_SRCS})
 source_group("Resource Files" FILES ${CURRENT_RC})
