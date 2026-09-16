@@ -20,6 +20,8 @@ file(GLOB SOUI_E2E_TEST_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/test_e
 list(APPEND FUN_TEST_SRC ${SOUI_CORE_TEST_SRC})
 
 add_executable(fun_test ${CURRENT_HEADERS} ${FUN_TEST_SRC})
+target_compile_definitions(fun_test PRIVATE
+    SOUI_FUN_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 
 # CMake 3.16 can scan TEST/TEST_F sources and register each case separately.
 # File groups make future tests part of the corresponding CTest label without
