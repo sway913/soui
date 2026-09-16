@@ -58,7 +58,7 @@ jobs:
           -DSOUI_BUILD_GAMES=OFF
           -DSOUI_FUN_TEST_POST_BUILD=OFF
           -DCMAKE_C_FLAGS='-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer'
-          -DCMAKE_CXX_FLAGS='-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer'
+          -DCMAKE_CXX_FLAGS='-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize-ignorelist=${{ github.workspace }}/.github/sanitizer-ignorelist.txt'
           -DCMAKE_EXE_LINKER_FLAGS='-fsanitize=address,undefined'
           -DCMAKE_SHARED_LINKER_FLAGS='-fsanitize=address,undefined'
       - name: Build fun_test

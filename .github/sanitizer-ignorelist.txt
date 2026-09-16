@@ -1,0 +1,6 @@
+# swinx stores its global HandleData table four bytes after a shared-memory
+# reference counter, so the table is misaligned for 64-bit fields. This
+# submodule issue is reported at process startup before SOUI tests can run.
+# Keep the SOUI pilot's other UBSan checks and ASan instrumentation active.
+[alignment]
+src:*/swinx/src/sysobjs.cpp
