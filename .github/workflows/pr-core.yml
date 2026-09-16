@@ -33,8 +33,8 @@ jobs:
         if: failure()
         run: |
           cd build/demos/fun_test
-          gdb -q -batch -ex run -ex 'thread apply all bt 20' -- ../../bin/fun_test '--gtest_filter=soui_component.resprovider_zip_load_and_read'
-          gdb -q -batch -ex run -ex 'thread apply all bt 20' -- ../../bin/fun_test '--gtest_filter=soui_window.named_child_lookup_respects_depth'
+          gdb -q -batch -ex 'set args --gtest_filter=soui_component.resprovider_zip_load_and_read' -ex run -ex 'thread apply all bt 20' -- ../../bin/fun_test
+          gdb -q -batch -ex 'set args --gtest_filter=soui_window.named_child_lookup_respects_depth' -ex run -ex 'thread apply all bt 20' -- ../../bin/fun_test
 
   core-windows-x64:
     name: core-windows-x64
