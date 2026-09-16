@@ -26,6 +26,17 @@ struct HostClose {
             host->DestroyWindow();
     }
 };
+
+struct EventUnsubscribe {
+    SWindow *window;
+    DWORD eventId;
+    const IEvtSlot *slot;
+
+    ~EventUnsubscribe()
+    {
+        window->UnsubscribeEvent(eventId, slot);
+    }
+};
 } // namespace
 
 // This creates a real native host window and sends input through its window
@@ -65,6 +76,7 @@ TEST(window, gui_smoke_dispatches_button_click)
     ClickCounter counter;
     auto slot = Subscriber(&ClickCounter::onClick, &counter);
     ASSERT_TRUE(action->SubscribeEvent(EventCmd::EventID, &slot));
+    EventUnsubscribe unsubscribe{action, EventCmd::EventID, &slot};
     CRect rect = action->GetWindowRect();
     ASSERT_GT(rect.Width(), 0);
     ASSERT_GT(rect.Height(), 0);
@@ -74,5 +86,4 @@ TEST(window, gui_smoke_dispatches_button_click)
     SendMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, point);
     SendMessage(hwnd, WM_LBUTTONUP, 0, point);
     EXPECT_EQ(counter.clicks, 1);
-
 }
