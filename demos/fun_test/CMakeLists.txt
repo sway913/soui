@@ -55,6 +55,20 @@ set_tests_properties(${SOUI_INTEGRATION_TESTS}
 set_tests_properties(${SOUI_E2E_TESTS}
     PROPERTIES LABELS soui-e2e TIMEOUT 60)
 
+# An opt-in native-window smoke check, run with a desktop display (Xvfb on
+# Linux). It is separate from the required 36-case headless PR entry.
+option(SOUI_ENABLE_GUI_SMOKE "Register the SOUI native-window smoke test" OFF)
+if(SOUI_ENABLE_GUI_SMOKE)
+    gtest_add_tests(TARGET fun_test
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/test_gui_smoke.cpp
+        TEST_LIST SOUI_GUI_SMOKE_TESTS)
+    if("${SOUI_GUI_SMOKE_TESTS}" STREQUAL "")
+        message(FATAL_ERROR "SOUI GUI smoke group is empty")
+    endif()
+    set_tests_properties(${SOUI_GUI_SMOKE_TESTS}
+        PROPERTIES LABELS soui-gui TIMEOUT 30)
+endif()
+
 target_include_directories(fun_test
     PUBLIC ${PROJECT_SOURCE_DIR}/third-part/Scintilla/include
 )

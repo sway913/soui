@@ -36,12 +36,14 @@
 - `demos/fun_test` 使用 Google Test，并编译 `SOUI/tests/` 中的核心单元用例；启用 demo 构建后可构建 `fun_test` 目标。Linux/macOS 的桌面构建默认在该目标完成后运行 `--gtest_filter=-window.*` 的全套非交互测试；PR 快速构建用 `-DSOUI_FUN_TEST_POST_BUILD=OFF` 关闭该构建后动作，再显式执行基础 CTest。Windows 或需要复跑全套时，应从构建输出目录手动运行 `fun_test` 并使用同一过滤条件。不要把“构建成功”泛化为全部测试通过。
 - 基本验证入口：构建 `fun_test` 后运行 `ctest --test-dir build -L '^soui-' --output-on-failure`。CTest 逐个注册并执行 `swinx/utilities` 单元测试、SOUI 核心函数单元测试、ZIP 资源提供器集成测试，以及资源索引与 XML 到控件树和状态变化的无窗口核心 E2E 测试；需要时可用 `ctest -R '^soui_matrix\.'` 等条件单独复跑。它还没有覆盖屏幕显示、鼠标输入、窗口事件派发、全部业务路径或平台。
 - `components/network/test` 的 `network_test` 由 `SOUI_BUILD_NETWORK_TEST` 选项控制，默认关闭；游戏模块也有各自的测试目标。选择与改动有关的补充测试并记录实际命令和结果。
+- GUI 试点需在有桌面显示的环境配置 `-DSOUI_ENABLE_GUI_SMOKE=ON`，构建 `fun_test` 后执行 `ctest --test-dir build -L '^soui-gui$' --output-on-failure`；Linux CI 使用 Xvfb。该烟测创建真实宿主窗口并验证鼠标消息到按钮事件的派发，暂不证明视觉像素正确或全部窗口交互。默认选项关闭，基础 36 个用例不受影响。
 - C/C++ 格式以仓库根目录 `.clang-format` 为准；格式化仅限所改文件，避免形成无关的大规模 diff。
 
 ## PR、CI 与发布
 
 - 正常代码变更通过 PR 进入受保护分支。代理应先完成本地验证、说明失败与限制，再处理 CI 和 Review 意见；Required Check 失败时继续修复并复跑，不把失败解释成通过。
 - `.github/workflows/build.yml` 仍在标签及 `build-test` 分支的 push 上运行完整架构矩阵；`.github/workflows/pr-core.yml` 为面向 `master` 的 PR 设置 Windows x64、Linux x64、macOS arm64 基础验证。工作流文件不能证明线上检查已成功运行或成为 Required Checks；必须在目标仓库的 PR 和分支规则中现场核验后才能报告门禁生效。
+- `.github/workflows/gui-sanitizer-pilot.yml` 是 Linux GUI 与 ASan+UBSan 试点，单独运行且暂不属于 Required Checks。Sanitizer 构建需让 SOUI、组件和测试目标都带编译插桩及链接运行时；先覆盖已有核心路径，发现问题后根据调用栈修复并补回归用例，再扩大用例和平台范围。试点失败时如实记录，不能把非必需检查解释为通过。
 - 对关键代码保留人工最终 Review。发布或部署结果须关联 PR、commit、构建制品和发布后验证记录；代理不能仅凭本地构建结果宣称已发布。
 
 ## 更新本文件

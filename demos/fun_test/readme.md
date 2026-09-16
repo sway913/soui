@@ -15,6 +15,12 @@ CTest 从测试源码注册独立用例，并用 `soui-unit`、`soui-integration
 
 Linux/macOS 默认在构建 `fun_test` 后运行全套非交互测试；PR 快速构建可配置 `-DSOUI_FUN_TEST_POST_BUILD=OFF`，然后显式运行上面的 CTest 命令。全套也可手动运行 `fun_test '--gtest_filter=-window.*'`。
 
+## GUI 与 Sanitizer 试点
+
+在有桌面显示的环境配置 `-DSOUI_ENABLE_GUI_SMOKE=ON`，构建后运行 `ctest --test-dir build -L '^soui-gui$' --output-on-failure`。Linux 可用 `xvfb-run -a` 包裹 CTest。`window.gui_smoke_dispatches_button_click` 创建并显示真实 SOUI 宿主窗口，通过窗口过程发送鼠标消息并检查按钮事件；它不会长期等待人工操作。GUI 组默认不注册，现有基础 PR 门禁仍为 36 个用例；全套非交互 `fun_test` 的 `-window.*` 过滤器也排除 GUI 组。此烟测尚不比较渲染像素或验证真实设备鼠标。
+
+`.github/workflows/gui-sanitizer-pilot.yml` 的 Linux Sanitizer 任务使用 Clang 为项目和 `fun_test` 编译、链接 ASan+UBSan，并在 Xvfb 下运行 SOUI 的 8 个核心单元、集成及无窗口 E2E 用例。该任务目前是独立试点，不作为 `master` 的合并必需检查；待实跑结果稳定并处理发现的问题后，再决定是否扩展覆盖或纳入门禁。
+
 ## 目录结构
 
 ```
